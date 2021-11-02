@@ -1,16 +1,12 @@
 # asciiquarium-lock
-Screen locker that shows ASCIIQuarium as a screensaver
+Screen locker that shows ASCIIQuarium as a screensaver with compatility for scaled Screens (Tested on Ubuntu 20 LTS with Gnome)
 
 ## Dependencies
 The following commands should be available in PATH:
-```sh
+```bash
 asciiquarium
-pyxtrlock
-awk
+xtrlock
 xfce4-terminal
 ```
-
-### Optional dependencies
-`xkblayout-state` to set the default layout on lock and restore on unlock
 
 `xrandr` to show ASCIIQuarium on multiple monitors
