@@ -13,7 +13,7 @@ if [ ! "$(command -v xtrlock)" ]; then
   echo "\"command not found: \"xtrlock\"" >&2
   exit 1
 fi
-
+set -x
 # Check for xrandr and run xterms
 if [ "$(command -v xrandr)" ]; then
 
@@ -22,11 +22,14 @@ if [ "$(command -v xrandr)" ]; then
   SCALING="$(grep -m 1 "<scale>" ~/.config/monitors.xml  | grep -oE '[0-9]')"
   OFFSETS="+0+0"
   PREV_X=0
-  while read -r RES ; do
-    X=$((PREV_X + $(echo "$RES" | cut -d x -f1) / SCALING))
-    PREV_X="$X"
-    OFFSETS="${OFFSETS};+${X}+0"
-  done <<< "$ORIGINAL_RES"
+
+  if [ -n "$ORIGINAL_RES" ] ; then
+    while read -r RES ; do
+      X=$((PREV_X + $(echo "$RES" | cut -d x -f1) / SCALING))
+      PREV_X="$X"
+      OFFSETS="${OFFSETS};+${X}+0"
+    done <<< "$ORIGINAL_RES"
+  fi
 
   IFS=";"
   for o in $OFFSETS; do
@@ -37,5 +40,5 @@ else
   xterm -fullscreen -e asciiquarium &
 fi
 
-#Lock screen and kill all the child processes on unlock
+# Lock screen and kill all the child processes on unlock
 xtrlock && pkill -f asciiquarium
