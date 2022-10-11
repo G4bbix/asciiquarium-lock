@@ -2,11 +2,9 @@
 Screen locker that shows ASCIIQuarium as a screensaver with compatility for scaled Screens (Tested on Ubuntu 20 LTS with i3)
 
 ## Dependencies
-The following commands should be available in PATH:
+The following commands should be available:
 ```bash
-asciiquarium
+/usr/local/binasciiquarium
 xtrlock
-xfce4-terminal
+alacritty
 ```
-
-`xrandr` to show ASCIIQuarium on multiple monitors

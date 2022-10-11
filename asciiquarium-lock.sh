@@ -1,12 +1,12 @@
 #!/bin/bash
 
 # Dependency checks
-if [ ! "$(command -v asciiquarium)" ]; then
+if ! [ -f "/usr/local/bin/asciiquarium" ]; then
   echo "\"command not found: \"asciiquarium\"" >&2
   exit 1
 fi
-if [ ! "$(command -v xfce4-terminal)" ]; then
-  echo "\"command not found: \"xfce4-terminal\"" >&2
+if [ ! "$(command -v alacritty)" ]; then
+  echo "\"command not found: \"alacritty\"" >&2
   exit 1
 fi
 if [ ! "$(command -v xtrlock)" ]; then
@@ -14,14 +14,20 @@ if [ ! "$(command -v xtrlock)" ]; then
   exit 1
 fi
 
-# Check for xrandr and run xterms
+WORKSPACES="$(i3-msg -t get_workspaces)"
+SCREENS_EXPR="$(jq -r ".[].output" <<< "$WORKSPACES" | sort -u | paste -sd \|)"
+WORKSPA0CES_EACH_SCREEN="$(jq -r 'keys[] as $k | "\(.[$k].output) \(.[$k].num)"' <<< "$WORKSPACES" \
+  | grep -E "^($SCREENS_EXPR)" | cut -d " " -f2)"
 
-# Calculate scaled offsets
-AMOUNT_SCREENS="$(xrandr | grep -wc connected)"
-
-for (( INDEX=1; INDEX<AMOUNT_SCREENS + 1; INDEX++ )) ; do
-  i3-msg 'workspace '"$INDEX"'; exec "xfce4-terminal --fullscreen --hide-menubar --hide-scrollbar --hide-borders -e asciiquarium"'
-done
+while read -r SPACE ; do
+  i3-msg 'workspace number '"$SPACE"''
+  alacritty -e /usr/local/bin/asciiquarium &
+  sleep .2
+  i3-msg fullscreen toggle
+done <<< "$WORKSPA0CES_EACH_SCREEN"
 
 # Lock screen and kill all the child processes on unlock
-xtrlock && pkill -f asciiquarium
+ xtrlock && pkill -f asciiquarium && \
+   for (( INDEX=1; INDEX<AMOUNT_SCREENS + 1; INDEX++ )) ; do \
+     \ i3-msg 'workspace number '"$INDEX"'' ; i3-msg fullscreen toggle
+   done
