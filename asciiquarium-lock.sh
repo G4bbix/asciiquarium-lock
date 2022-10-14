@@ -21,6 +21,7 @@ WORKSPA0CES_EACH_SCREEN="$(jq -r 'keys[] as $k | "\(.[$k].output) \(.[$k].num)"'
 
 while read -r SPACE ; do
   i3-msg 'workspace number '"$SPACE"''
+  i3-msg tabbed layout
   alacritty -e /usr/local/bin/asciiquarium &
   sleep .2
   i3-msg fullscreen toggle
@@ -28,6 +29,6 @@ done <<< "$WORKSPA0CES_EACH_SCREEN"
 
 # Lock screen and kill all the child processes on unlock
  xtrlock && pkill -f asciiquarium && \
-   for (( INDEX=1; INDEX<AMOUNT_SCREENS + 1; INDEX++ )) ; do \
+   while read -r SPACE ; do 
      \ i3-msg 'workspace number '"$INDEX"'' ; i3-msg fullscreen toggle
-   done
+   done <<< "$WORKSPA0CES_EACH_SCREEN"
